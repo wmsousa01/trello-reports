@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Autorizar – Trello Reports</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <script src="https://trello.com/1/client.js?key=APP_KEY_AQUI"></script>
+  <style>
+    body { font-family: Inter, system-ui, Arial; padding: 16px; }
+    button { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h3>Conectar ao Trello</h3>
+  <p>Precisamos de acesso <strong>somente leitura</strong> para gerar os relatórios.</p>
+  <button id="connect">🔐 Conectar</button>
+
+  <script>
+    const t = window.TrelloPowerUp.iframe();
+
+    async function authorize() {
+      // novo fluxo
+      if (t && t.getRestApi) {
+        const api = await t.getRestApi();
+        await api.authorize({ scope: 'read', expiration: 'never', name: 'Trello Reports' });
+        return t.closePopup();
+      }
+      // fallback legado
+      if (window.Trello && Trello.authorize) {
+        return Trello.authorize({
+          type: 'popup',
+          name: 'Trello Reports',
+          persist: true,
+          scope: { read: true, write: false },
+          expiration: 'never',
+          success: () => t.closePopup(),
+          error: () => alert('Não foi possível autorizar. Tente novamente.')
+        });
+      }
+      alert('SDK indisponível.');
+    }
+
+    document.getElementById('connect').addEventListener('click', authorize);
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Trello Reports – Connector v10</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+<script>
+  // Ícone inline para o botão (ajuda a aparecer na lista "Buttons" da UI nova)
+  const ICON = {
+    dark:  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/></svg>',
+    light: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/></svg>'
+  };
+
+  window.TrelloPowerUp.initialize(
+    {
+      // 1) Board Button (aparece em Power-Ups ▸ Buttons; pode ser "pinado" no topo)
+      'board-buttons': function(t) {
+        return [{
+          icon: ICON,
+          text: '📊 Dashboard',
+          condition: 'always',
+          callback: function(t) {
+            return t.modal({
+              url: t.signUrl('/index.html'),
+              title: 'Trello Reports',
+              fullscreen: true
+            });
+          }
+        }];
+      },
+
+      // 2) Board View (aba em "Views/Visualizações" — se disponível no seu plano)
+      'board-views': function(t) {
+        return Promise.resolve([
+          { title: '📊 Dashboard', url: t.signUrl('/index.html') }
+        ]);
+      },
+
+      // 3) Card Button (botão dentro de cada cartão — garantia visual)
+      'card-buttons': function(t) {
+        return [{
+          icon: ICON,
+          text: '📊 Dashboard',
+          callback: function(t) {
+            return t.modal({
+              url: t.signUrl('/index.html'),
+              title: 'Trello Reports',
+              fullscreen: true
+            });
+          }
+        }];
+      },
+
+      // 4) Settings (atalho)
+      'show-settings': function(t) {
+        return t.modal({
+          url: t.signUrl('/settings.html'),
+          title: 'Configurações – Trello Reports',
+          height: 260
+        });
+      }
+    },
+    { appName: 'Trello Reports' }
+  );
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Settings – Trello Reports</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <style>
+    body { font-family: Inter, system-ui, Arial; padding:16px; }
+    button { padding:8px 12px; border:1px solid #ddd; border-radius:8px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <h3>Configurações</h3>
+  <p>Clique para abrir o dashboard em tela cheia:</p>
+  <button id="open">📊 Abrir Dashboard</button>
+  <script>
+    const t = window.TrelloPowerUp.iframe();
+    document.getElementById('open').addEventListener('click', () => {
+      t.modal({ url: t.signUrl('/index.html'), fullscreen: true, title: 'Trello Reports' });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="robots" content="noindex,nofollow">
+    <title>Trello Dashboard</title>
+    <!-- SDK do Power-Up -->
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script type="module" crossorigin src="/assets/index-CAFM04RG.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <!-- 🔌 Registra as capacidades e cria as entradas do Power-Up -->
+    <script>
+      // Ícone inline só para aparecer na UI “Buttons”
+      const ICON = {
+        dark:  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/></svg>',
+        light: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/></svg>'
+      };
+
+      window.TrelloPowerUp.initialize(
+        {
+          // 1) Botão no topo (aparece em Power-Ups ▸ Buttons; dá para “pinar”)
+          'board-buttons': (t) => [{
+            icon: ICON,
+            text: '📊 Dashboard',
+            condition: 'always',
+            callback: () => t.modal({
+              url: t.signUrl('/index.html'),
+              title: 'Trello Reports',
+              fullscreen: true
+            })
+          }],
+
+          // 2) Botão dentro de cada cartão (garantia visual)
+          'card-buttons': (t) => [{
+            icon: ICON,
+            text: '📊 Dashboard',
+            callback: () => t.modal({
+              url: t.signUrl('/index.html'),
+              title: 'Trello Reports',
+              fullscreen: true
+            })
+          }],
+
+          // 3) Aba em Views/Visualizações (se sua conta tiver o recurso)
+          'board-views': (t) => Promise.resolve([
+            { title: '📊 Dashboard', url: t.signUrl('/index.html') }
+          ]),
+
+          // 4) (Opcional) Configurações com atalho para o painel
+          'show-settings': (t) => t.modal({
+            url: t.signUrl('/settings.html'),
+            title: 'Configurações – Trello Reports',
+            height: 260
+          })
+        },
+        { appName: 'Trello Reports' }
+      );
+    </script>
+
+    <!-- 👇 entry do seu app React -->
+  </body>
+</html>

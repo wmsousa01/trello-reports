@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Trello Reports – Connector</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <style>
+    /* Fallback visível somente quando abrir fora do Trello */
+    body { font-family: Inter, system-ui, Arial; padding: 12px; }
+    #fallback { display: none; }
+  </style>
+</head>
+<body>
+  <div id="fallback">
+    <h3>Conector carregado ✅</h3>
+    <p>Este arquivo é usado pelo Trello. Para testar manualmente o dashboard:</p>
+    <p><a href="/index.html">➡️ Abrir Dashboard</a></p>
+  </div>
+
+  <script>
+    if (window.TrelloPowerUp) {
+      window.TrelloPowerUp.initialize(
+        {
+          /* 1) Botão no topo (menu de Power-Ups da board) */
+          'board-buttons': (t) => [{
+            text: '📊 Dashboard',
+            condition: 'always',
+            callback: () => t.modal({
+              url: t.signUrl('/index.html'),
+              title: 'Trello Reports',
+              fullscreen: true
+            })
+          }],
+
+          /* 2) Aba em Views/Visualizações (se sua conta tiver o recurso) */
+          'board-views': (t) => Promise.resolve([
+            { title: '📊 Dashboard', url: t.signUrl('/index.html') }
+          ]),
+
+          /* 3) Botão dentro de cada cartão (garantia visual dentro do card) */
+          'card-buttons': (t) => [{
+            text: '📊 Dashboard',
+            callback: () => t.modal({
+              url: t.signUrl('/index.html'),
+              title: 'Trello Reports',
+              fullscreen: true
+            })
+          }],
+
+          /* 4) Settings (atalho pra abrir o painel a partir de Configurações) */
+          'show-settings': (t) => t.modal({
+            url: t.signUrl('/settings.html'),
+            title: 'Configurações – Trello Reports',
+            height: 260
+          })
+        },
+        { appName: 'Trello Reports' }
+      );
+    } else {
+      /* Quando aberto fora do Trello */
+      document.getElementById('fallback').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
