@@ -1,0 +1,21 @@
+# dependências e caches
+node_modules
+.pnpm-store
+.npm
+.cache
+
+# git & editor
+.git
+.gitignore
+.vscode
+.DS_Store
+
+# artefatos locais
+*.log
+*.map
+*.local
+*.env.local
+
+# pastas que não precisam no deploy
+screenshots
+docs
