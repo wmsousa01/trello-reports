@@ -3,36 +3,17 @@
   "iframe": {
     "dashboard": {
       "title": "📊 Dashboard",
-      "url": "https://trello-reports.vercel.app/index.html?boardId={board.id}&mode=public&access=devtoken"
+      "url": "https://trello-reports.vercel.app/index.html"
     }
   },
   "capabilities": [
     "board-buttons",
-    "board-views"
+    "board-views",
+    "show-settings"
   ],
-  "board-buttons": [
-    {
-      "text": "📊 Abrir Dashboard",
-      "icon": {
-        "url": "https://cdn-icons-png.flaticon.com/512/1828/1828778.png"
-      },
-      "callback": "openDashboard"
-    }
-  ],
-  "board-views": [
-    {
-      "url": "https://trello-reports.vercel.app/index.html?boardId={board.id}&mode=public&access=devtoken",
-      "name": "📊 Dashboard",
-      "icon": {
-        "url": "https://cdn-icons-png.flaticon.com/512/1828/1828778.png"
-      }
-    }
-  ],
-  "name": "Dashboard Power-Up",
+  "name": "Trello Reports",
   "description": "Visualize métricas e relatórios da sua board em tempo real",
   "author": "Willian de Souza",
   "version": "1.0.0",
-  "icon": {
-    "url": "https://cdn-icons-png.flaticon.com/512/1828/1828778.png"
-  }
+  "icon": { "url": "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" }
 }

@@ -1,39 +1,59 @@
 // src/trello.js
+const ICON_URL = 'https://cdn-icons-png.flaticon.com/512/1828/1828778.png';
 const DASH_URL_TEMPLATE = 'https://trello-reports.vercel.app/index.html?boardId={board.id}&mode=public&access=devtoken';
 
 function urlWithBoardId(t) {
-  const ctx = t.getContext(); // { board, card, member, ... }
-  return DASH_URL_TEMPLATE.replace('{board.id}', ctx.board);
+  try {
+    const ctx = t.getContext(); // { board, card, member, ... }
+    const bid = ctx?.board || 'CUUp9Mv3'; // fallback
+    return DASH_URL_TEMPLATE.replace('{board.id}', bid);
+  } catch {
+    return DASH_URL_TEMPLATE.replace('{board.id}', 'CUUp9Mv3');
+  }
 }
 
 window.TrelloPowerUp.initialize({
-  // Botão no topo da board
+  // 🔘 Botão no topo
   'board-buttons': (t) => ([
     {
-      icon: { url: 'https://cdn-icons-png.flaticon.com/512/1828/1828778.png', alt: 'Dashboard' },
+      icon: { url: ICON_URL, alt: 'Dashboard' },
       text: '📊 Abrir Dashboard',
-      callback: () => {
-        const url = urlWithBoardId(t);
-        window.open(url, '_blank', 'noopener,noreferrer');
+      callback: async () => {
+        const raw = urlWithBoardId(t);
+        const signed = await t.signUrl(raw);
+        // abre em modal dentro do Trello (melhor UX e menos bloqueio)
+        await t.modal({
+          title: '📊 Dashboard',
+          url: signed,
+          fullscreen: true
+        });
         return t.closePopup();
       }
     }
   ]),
 
-  // Aba/visualização embutida no Trello (menu “Visualizações do quadro”)
+  // 📊 Visualização embutida (menu “Visualizações do quadro”)
   'board-views': (t) => ([
     {
-      url: urlWithBoardId(t),
-      name: '📊 Dashboard'
+      // importante: usar URL assinada
+      url: async () => {
+        const raw = urlWithBoardId(t);
+        return t.signUrl(raw);
+      },
+      name: '📊 Dashboard',
+      // opcional: ícone na aba
+      icon: { url: ICON_URL }
     }
   ]),
 
-  // (Opcional) o que abre quando clicam em “Configurações” do Power-Up
-  'show-settings': (t) => {
+  // ⚙️ Configurações (abre a mesma dashboard em fullscreen)
+  'show-settings': async (t) => {
+    const raw = urlWithBoardId(t);
+    const signed = await t.signUrl(raw);
     return t.modal({
       title: '📊 Dashboard',
-      url: urlWithBoardId(t),
+      url: signed,
       fullscreen: true
     });
   }
-});
+}, { appName: 'Trello Reports' });
