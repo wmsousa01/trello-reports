@@ -5,28 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Cache-Control" content="no-store" />
     <title>Trello Reports — Connector</title>
-
-    <!-- SDK do Trello (sincrono) -->
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
-
     <script>
-      // Nada assíncrono, nada externo; retorna o botão imediatamente
-      window.TrelloPowerUp.initialize(
-        {
-          'board-buttons': function (t) {
-            return [
+      (function () {
+        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png", alt: "Dashboard" };
+        const APP  = "https://trello-reports.vercel.app/index.html";
+
+        function buildUrl(t) {
+          const ctx = t.getContext ? t.getContext() : {};
+          const boardId = ctx && ctx.board ? ctx.board : "CUUp9Mv3";
+          return `${APP}?boardId=${boardId}&mode=public&access=devtoken`;
+        }
+
+        window.TrelloPowerUp.initialize(
+          {
+            "board-buttons": (t) => [
               {
-                text: '✅ Teste de Botão',
-                condition: 'always',
-                callback: function () {
-                  return t.alert({ message: 'Botão funcionando!' });
+                icon: ICON,
+                text: "📊 Abrir Dashboard",
+                condition: "always",
+                callback: async () => {
+                  const url = buildUrl(t);
+                  return t.modal({
+                    title: "📊 Dashboard",
+                    url: await t.signUrl(url),
+                    fullscreen: true
+                  });
                 }
               }
-            ];
+            ],
+            "board-views": (t) => [
+              {
+                url: async () => await t.signUrl(buildUrl(t)),
+                name: "📊 Dashboard",
+                icon: ICON
+              }
+            ],
+            "show-settings": async (t) => {
+              const url = buildUrl(t);
+              return t.modal({ title: "📊 Dashboard", url: await t.signUrl(url), fullscreen: true });
+            }
+          },
+          {
+            appName: "Trello Reports",
+            appKey: "7e9b8d1cfbe5742d0417872d32657a84"
           }
-        },
-        { appName: 'Trello Reports (mínimo)' }
-      );
+        );
+      })();
     </script>
   </head>
   <body></body>
