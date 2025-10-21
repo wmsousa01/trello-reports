@@ -6,10 +6,10 @@
       "url": "https://trello-reports.vercel.app/connector.html"
     }
   },
-  "capabilities": ["board-buttons", "board-views", "show-settings"],
+  "capabilities": ["board-buttons"],
   "name": "Trello Reports",
-  "description": "Visualize métricas e relatórios da sua board em tempo real",
+  "description": "Teste mínimo de botão estável",
   "author": "Willian de Souza",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "icon": { "url": "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" }
 }

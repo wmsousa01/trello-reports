@@ -5,54 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Cache-Control" content="no-store" />
     <title>Trello Reports — Connector</title>
+
     <!-- SDK do Trello (sincrono) -->
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
+
     <script>
-      (function () {
-        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png", alt: "Dashboard" };
-        const APP  = "https://trello-reports.vercel.app/index.html";
-
-        function buildUrl(t) {
-          const ctx = t.getContext ? t.getContext() : {};
-          const boardId = ctx && ctx.board ? ctx.board : "CUUp9Mv3";
-          return APP + `?boardId=${boardId}&mode=public&access=devtoken`;
-        }
-
-        // Registra capacidades imediatamente (sem esperar onload)
-        window.TrelloPowerUp.initialize({
-          "board-buttons": function (t) {
+      // Nada assíncrono, nada externo; retorna o botão imediatamente
+      window.TrelloPowerUp.initialize(
+        {
+          'board-buttons': function (t) {
             return [
               {
-                icon: ICON,
-                text: "📊 Abrir Dashboard",
-                condition: "always",
+                text: '✅ Teste de Botão',
+                condition: 'always',
                 callback: function () {
-                  window.open(buildUrl(t), "_blank", "noopener,noreferrer");
-                  return t.closePopup();
+                  return t.alert({ message: 'Botão funcionando!' });
                 }
               }
             ];
-          },
-
-          "board-views": function (t) {
-            return [
-              {
-                url: buildUrl(t),
-                name: "📊 Dashboard",
-                icon: ICON
-              }
-            ];
-          },
-
-          "show-settings": function (t) {
-            return t.modal({
-              title: "📊 Dashboard",
-              url: buildUrl(t),
-              fullscreen: true
-            });
           }
-        }, { appName: "Trello Reports" });
-      })();
+        },
+        { appName: 'Trello Reports (mínimo)' }
+      );
     </script>
   </head>
   <body></body>
