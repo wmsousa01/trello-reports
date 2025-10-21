@@ -3,7 +3,7 @@
   "iframe": {
     "dashboard": {
       "title": "📊 Dashboard",
-      "url": "https://trello-reports.vercel.app/index.html"
+      "url": "https://trello-reports.vercel.app/connector.html"
     }
   },
   "capabilities": ["board-buttons", "board-views", "show-settings"],
