@@ -6,11 +6,7 @@
       "url": "https://trello-reports.vercel.app/index.html"
     }
   },
-  "capabilities": [
-    "board-buttons",
-    "board-views",
-    "show-settings"
-  ],
+  "capabilities": ["board-buttons", "board-views", "show-settings"],
   "name": "Trello Reports",
   "description": "Visualize métricas e relatórios da sua board em tempo real",
   "author": "Willian de Souza",

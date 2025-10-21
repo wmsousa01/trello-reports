@@ -1,65 +1,72 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>Trello Dashboard</title>
+    <title>Trello Reports</title>
 
-    <!-- SDK oficial do Trello Power-Up -->
+    <!-- SDK oficial do Trello Power-Ups -->
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
   </head>
 
   <body>
     <div id="root"></div>
+    <noscript>Habilite JavaScript para usar o Trello Reports.</noscript>
 
-    <!-- ============================
-         Registro das capacidades Trello
-         ============================ -->
+    <!-- ===== Registro das capacidades (UMA ÚNICA VEZ) ===== -->
     <script>
-      const ICON = {
-        dark:  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="white"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/></svg>',
-        light: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="black"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="3" width="4" height="18"/></svg>'
-      };
+      // evita múltiplas inicializações (hot-reload, navegação, etc.)
+      if (!window.__TRELLO_PU_INIT__) {
+        window.__TRELLO_PU_INIT__ = true;
 
-      // evita registrar múltiplas vezes (recarregamento do React/Vite etc.)
-      if (!window.__TRELLO_INITIALIZED__) {
-        window.__TRELLO_INITIALIZED__ = true;
+        const ICON_URL = "https://cdn-icons-png.flaticon.com/512/1828/1828778.png";
+        const BASE = "https://trello-reports.vercel.app/index.html";
 
-        window.TrelloPowerUp.initialize(
-          {
-            // 🔘 botão no topo do board
-            'board-buttons': (t) => [{
-              icon: ICON,
-              text: '📊 Dashboard',
-              condition: 'always',
-              callback: () =>
-                t.modal({
-                  url: t.signUrl('/index.html'),
-                  title: '📊 Trello Reports',
-                  fullscreen: true
-                })
-            }],
+        // monta a URL final com o id da board
+        function makeUrl(t) {
+          const ctx = t.getContext && t.getContext();
+          const boardId = (ctx && ctx.board) ? ctx.board : "CUUp9Mv3"; // fallback
+          return `${BASE}?boardId=${boardId}&mode=public&access=devtoken`;
+        }
 
-            // 📊 aba “Visualizações do quadro”
-            'board-views': (t) => [
-              { title: '📊 Dashboard', url: t.signUrl('/index.html') }
-            ],
+        window.TrelloPowerUp.initialize({
+          // 🔘 Botão no topo do board
+          "board-buttons": (t) => [
+            {
+              icon: { url: ICON_URL, alt: "Dashboard" },
+              text: "📊 Abrir Dashboard",
+              condition: "always",
+              callback: () => {
+                const url = makeUrl(t);
+                // simples e robusto: abre em nova aba
+                window.open(url, "_blank", "noopener,noreferrer");
+                return t.closePopup();
+              }
+            }
+          ],
 
-            // ⚙️ configurações (abre modal igual ao dashboard)
-            'show-settings': (t) =>
-              t.modal({
-                url: t.signUrl('/index.html'),
-                title: 'Configurações – Trello Reports',
-                fullscreen: true
-              })
-          },
-          { appName: 'Trello Reports' }
-        );
+          // 📊 Visualização embutida (menu “Visualizações do quadro”)
+          "board-views": (t) => [
+            {
+              url: makeUrl(t),
+              name: "📊 Dashboard",
+              icon: { url: ICON_URL }
+            }
+          ],
+
+          // ⚙️ Configurações (abre a mesma dashboard em tela cheia)
+          "show-settings": (t) =>
+            t.modal({
+              title: "📊 Dashboard",
+              url: makeUrl(t),
+              fullscreen: true
+            })
+        }, { appName: "Trello Reports" });
       }
     </script>
 
-    <!-- 👇 entrada do app React -->
-    <script type="module" src="./src/main.jsx"></script>
+    <!-- ===== Entrada do app React (Vite) ===== -->
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
