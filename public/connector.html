@@ -5,93 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Cache-Control" content="no-store" />
     <title>Trello Reports — Connector</title>
-    <script src="https://p.trellocdn.com/power-up.min.js" defer></script>
-  </head>
-  <body>
+    <!-- SDK do Trello (sincrono) -->
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <script>
       (function () {
-        // Evita registrar 2x se o Trello remontar o iframe
-        if (window.__TR_PU_INIT__) {
-          console.log('TR: connector already initialized');
-          return;
-        }
-        window.__TR_PU_INIT__ = true;
+        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png", alt: "Dashboard" };
+        const APP  = "https://trello-reports.vercel.app/index.html";
 
-        const ICON = 'https://cdn-icons-png.flaticon.com/512/1828/1828778.png';
-        const APP = 'https://trello-reports.vercel.app/index.html';
-
-        function urlWithBoard(t) {
-          try {
-            const ctx = t.getContext?.() || {};
-            const bid = ctx.board || 'CUUp9Mv3';
-            const url = `${APP}?boardId=${bid}&mode=public&access=devtoken`;
-            console.log('TR: built URL', url);
-            return url;
-          } catch (e) {
-            console.error('TR: ctx error', e);
-            return `${APP}?boardId=CUUp9Mv3&mode=public&access=devtoken`;
-          }
+        function buildUrl(t) {
+          const ctx = t.getContext ? t.getContext() : {};
+          const boardId = ctx && ctx.board ? ctx.board : "CUUp9Mv3";
+          return APP + `?boardId=${boardId}&mode=public&access=devtoken`;
         }
 
-        function init() {
-          try {
-            console.log('TR: calling initialize');
-            window.TrelloPowerUp.initialize(
+        // Registra capacidades imediatamente (sem esperar onload)
+        window.TrelloPowerUp.initialize({
+          "board-buttons": function (t) {
+            return [
               {
-                'board-buttons': function (t) {
-                  const btns = [
-                    {
-                      icon: { url: ICON, alt: 'Dashboard' },
-                      text: '📊 Abrir Dashboard',
-                      condition: 'always',
-                      callback: function () {
-                        const url = urlWithBoard(t);
-                        window.open(url, '_blank', 'noopener,noreferrer');
-                        return t.closePopup();
-                      }
-                    }
-                  ];
-                  console.log('TR: board-buttons registered', btns.length);
-                  return btns;
-                },
-
-                'board-views': function (t) {
-                  const views = [
-                    {
-                      url: urlWithBoard(t),
-                      name: '📊 Dashboard',
-                      icon: { url: ICON }
-                    }
-                  ];
-                  console.log('TR: board-views registered', views.length);
-                  return views;
-                },
-
-                'show-settings': function (t) {
-                  const url = urlWithBoard(t);
-                  console.log('TR: show-settings open modal', url);
-                  return t.modal({ title: '📊 Dashboard', url, fullscreen: true });
+                icon: ICON,
+                text: "📊 Abrir Dashboard",
+                condition: "always",
+                callback: function () {
+                  window.open(buildUrl(t), "_blank", "noopener,noreferrer");
+                  return t.closePopup();
                 }
-              },
-              { appName: 'Trello Reports' }
-            );
-            console.log('TR: initialize called ✔️');
-          } catch (e) {
-            console.error('TR: initialize failed', e);
+              }
+            ];
+          },
+
+          "board-views": function (t) {
+            return [
+              {
+                url: buildUrl(t),
+                name: "📊 Dashboard",
+                icon: ICON
+              }
+            ];
+          },
+
+          "show-settings": function (t) {
+            return t.modal({
+              title: "📊 Dashboard",
+              url: buildUrl(t),
+              fullscreen: true
+            });
           }
-        }
-
-        // Se o SDK já carregou, inicializa; senão, espera.
-        if (window.TrelloPowerUp && window.TrelloPowerUp.initialize) {
-          init();
-        } else {
-          window.addEventListener('load', init);
-        }
-
-        window.addEventListener('error', (e) => {
-          console.error('TR: window error', e.error || e.message || e);
-        });
+        }, { appName: "Trello Reports" });
       })();
     </script>
-  </body>
+  </head>
+  <body></body>
 </html>
