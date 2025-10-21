@@ -1,72 +1,18 @@
 <!doctype html>
 <html lang="pt-BR">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Trello Reports</title>
-
-    <!-- SDK oficial do Trello Power-Ups -->
-    <script src="https://p.trellocdn.com/power-up.min.js"></script>
   </head>
 
   <body>
     <div id="root"></div>
-    <noscript>Habilite JavaScript para usar o Trello Reports.</noscript>
+    <noscript>Habilite JavaScript para visualizar o Trello Reports.</noscript>
 
-    <!-- ===== Registro das capacidades (UMA ÚNICA VEZ) ===== -->
-    <script>
-      // evita múltiplas inicializações (hot-reload, navegação, etc.)
-      if (!window.__TRELLO_PU_INIT__) {
-        window.__TRELLO_PU_INIT__ = true;
-
-        const ICON_URL = "https://cdn-icons-png.flaticon.com/512/1828/1828778.png";
-        const BASE = "https://trello-reports.vercel.app/index.html";
-
-        // monta a URL final com o id da board
-        function makeUrl(t) {
-          const ctx = t.getContext && t.getContext();
-          const boardId = (ctx && ctx.board) ? ctx.board : "CUUp9Mv3"; // fallback
-          return `${BASE}?boardId=${boardId}&mode=public&access=devtoken`;
-        }
-
-        window.TrelloPowerUp.initialize({
-          // 🔘 Botão no topo do board
-          "board-buttons": (t) => [
-            {
-              icon: { url: ICON_URL, alt: "Dashboard" },
-              text: "📊 Abrir Dashboard",
-              condition: "always",
-              callback: () => {
-                const url = makeUrl(t);
-                // simples e robusto: abre em nova aba
-                window.open(url, "_blank", "noopener,noreferrer");
-                return t.closePopup();
-              }
-            }
-          ],
-
-          // 📊 Visualização embutida (menu “Visualizações do quadro”)
-          "board-views": (t) => [
-            {
-              url: makeUrl(t),
-              name: "📊 Dashboard",
-              icon: { url: ICON_URL }
-            }
-          ],
-
-          // ⚙️ Configurações (abre a mesma dashboard em tela cheia)
-          "show-settings": (t) =>
-            t.modal({
-              title: "📊 Dashboard",
-              url: makeUrl(t),
-              fullscreen: true
-            })
-        }, { appName: "Trello Reports" });
-      }
-    </script>
-
-    <!-- ===== Entrada do app React (Vite) ===== -->
+    <!-- 🚫 NÃO carregue power-up.min.js nem initialize aqui -->
+    <!-- 👇 Apenas o bundle do Vite/React -->
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
