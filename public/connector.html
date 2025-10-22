@@ -1,65 +1,65 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="Cache-Control" content="no-store" />
-    <title>Trello Reports — Connector</title>
+<head>
+  <meta charset="utf-8" />
+  <title>Trello Reports – Connector</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+</head>
+<body>
+  <script>
+    (function () {
+      const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
+      // Abra a raiz (/) com os parâmetros — não use mais /index.html
+      const BASE = "/";
 
-    <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script>
-      (function () {
-        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
-        const BASE_URL = "https://trello-reports.vercel.app";
+      // Gera a URL com o boardId (pegando do contexto do Trello)
+      async function buildUrl(t) {
+        const ctx = await t.getContext();              // <- async é importante
+        const boardId = ctx.board || "unknown";
+        return `${BASE}?boardId=${boardId}&mode=public&access=devtoken`;
+      }
 
-        async function buildUrl(t) {
-          const context = await t.getContext();
-          const boardId = context.board || "unknown";
-          return `${BASE_URL}/?boardId=${boardId}&mode=public&access=devtoken`;
-        }
+      window.TrelloPowerUp.initialize(
+        {
+          // 🔘 Botão no topo
+          "board-buttons": (t) => [
+            {
+              icon: ICON,
+              text: "📊 Dashboard",
+              condition: "always",
+              callback: async () => {
+                const url = await buildUrl(t);
+                return t.modal({
+                  title: "📊 Dashboard",
+                  url: await t.signUrl(url),
+                  fullscreen: true
+                });
+              }
+            }
+          ],
 
-        window.TrelloPowerUp.initialize(
-          {
-            "board-buttons": (t) => [
-              {
-                icon: ICON,
-                text: "📊 Dashboard",
-                condition: "always",
-                callback: async () => {
-                  const url = await buildUrl(t);
-                  return t.modal({
-                    title: "📊 Dashboard",
-                    url: await t.signUrl(url),
-                    fullscreen: true,
-                  });
-                },
-              },
-            ],
+          // 📊 Visualização embutida (opcional)
+          "board-views": (t) => [
+            {
+              url: async () => await t.signUrl(await buildUrl(t)),
+              name: "📊 Dashboard",
+              icon: ICON
+            }
+          ],
 
-            "board-views": (t) => [
-              {
-                url: async () => await t.signUrl(await buildUrl(t)),
-                name: "📊 Dashboard",
-                icon: ICON,
-              },
-            ],
-
-            "show-settings": async (t) => {
-              const url = await buildUrl(t);
-              return t.modal({
-                title: "📊 Dashboard",
-                url: await t.signUrl(url),
-                fullscreen: true,
-              });
-            },
-          },
-          {
-            appName: "Trello Reports",
-            appKey: "SEU_APP_KEY_AQUI",
+          // ⚙️ Configurações (opcional)
+          "show-settings": async (t) => {
+            const url = await buildUrl(t);
+            return t.modal({
+              title: "📊 Dashboard",
+              url: await t.signUrl(url),
+              fullscreen: true
+            });
           }
-        );
-      })();
-    </script>
-  </head>
-  <body></body>
+        },
+        { appName: "Trello Reports" } // se usar REST API, adicione appKey aqui
+      );
+    })();
+  </script>
+</body>
 </html>
