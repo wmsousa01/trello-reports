@@ -15,7 +15,7 @@
         function buildUrl(t) {
           const context = t.getContext();
           const boardId = context?.board ?? "unknown";
-          return `${BASE_URL}?boardId=${boardId}&mode=public&access=devtoken`;
+          return `${BASE_URL}/?boardId=${boardId}&mode=public&access=devtoken`;
         }
 
         window.TrelloPowerUp.initialize(
