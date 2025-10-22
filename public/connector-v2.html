@@ -6,64 +6,80 @@
     <meta http-equiv="Cache-Control" content="no-store" />
     <title>Trello Reports — Connector v2</title>
 
-    <script src="https://p.trellocdn.com/power-up.min.js"></script>
-    <script>
-      (function () {
-        // Ícones inline para evitar falhas de carregamento
-        const ICON = {
-          dark: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="3" y="11" width="4" height="10"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/></svg>',
-          light: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="black"><rect x="3" y="11" width="4" height="10"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/></svg>'
-        };
+    <script type="module">
+      import TrelloPowerUp from "https://p.trellocdn.com/power-up.min.js";
 
-        const BASE = "https://trello-reports.vercel.app"; // RAIZ do app
+      // Ícone inline para evitar falhas de carregamento
+      const ICON = {
+        dark: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="3" y="11" width="4" height="10"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/></svg>',
+        light: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="black"><rect x="3" y="11" width="4" height="10"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/></svg>'
+      };
 
-        async function buildUrl(t) {
-          const ctx = await t.getContext();
-          const boardId = ctx.board || "unknown";
-          const ts = Date.now(); // força cache-buster
-          const url = `${BASE}/?boardId=${boardId}&mode=public&access=devtoken&_=${ts}`;
-          console.log("🔗 URL gerada:", url);
-          return url;
-        }
+      const BASE = "https://trello-reports.vercel.app";
 
-        window.TrelloPowerUp.initialize(
-          {
-            "board-buttons": (t) => [
-              {
-                icon: ICON,
-                text: "📊 Dashboard",
-                condition: "always",
-                callback: async function (t) {
-                  const url = await buildUrl(t);
-                  return t.modal({
-                    title: "📊 Dashboard",
-                    url: await t.signUrl(url),
-                    fullscreen: true
-                  });
-                }
+      // 🗺️ Mapeamento de appKeys por workspace (usando variáveis de ambiente da Vercel)
+      const APP_KEYS = {
+        "team_moa123": import.meta.env.VITE_TRELLO_APPKEY_MOA,
+        "team_webmakers456": import.meta.env.VITE_TRELLO_APPKEY_WEBMAKERS,
+        "team_riteke999": import.meta.env.VITE_TRELLO_APPKEY_RITEKE
+      };
+
+      const DEFAULT_KEY = import.meta.env.VITE_TRELLO_APPKEY_DEFAULT;
+
+      async function getAppKey(t) {
+        const ctx = await t.getContext();
+        return APP_KEYS[ctx.organization] || DEFAULT_KEY;
+      }
+
+      async function buildUrl(t) {
+        const ctx = await t.getContext();
+        const boardId = ctx.board || "unknown";
+        const ts = Date.now(); // evita cache
+        return `${BASE}/?boardId=${boardId}&mode=public&access=devtoken&_=${ts}`;
+      }
+
+      TrelloPowerUp.initialize(
+        {
+          "board-buttons": (t) => [
+            {
+              icon: ICON,
+              text: "📊 Dashboard",
+              condition: "always",
+              callback: async function (t) {
+                const appKey = await getAppKey(t);
+                const url = await buildUrl(t);
+                return t.modal({
+                  title: "📊 Dashboard",
+                  url: await t.signUrl(url, { appKey }),
+                  fullscreen: true
+                });
               }
-            ],
-
-            "board-views": (t) => [
-              {
-                url: async () => await t.signUrl(await buildUrl(t)),
-                name: "📊 Dashboard",
-                icon: ICON
-              }
-            ],
-
-            "show-settings": async (t) => {
-              const url = await buildUrl(t);
-              return t.modal({
-                title: "📊 Dashboard",
-                url: await t.signUrl(url),
-                fullscreen: true
-              });
             }
-          },
-          { appName: "Trello Reports" }
-        );
-      })();
+          ],
+
+          "board-views": (t) => [
+            {
+              url: async () => await t.signUrl(await buildUrl(t)),
+              name: "📊 Dashboard",
+              icon: ICON
+            }
+          ],
+
+          "show-settings": async (t) => {
+            const url = await buildUrl(t);
+            const appKey = await getAppKey(t);
+            return t.modal({
+              title: "📊 Dashboard",
+              url: await t.signUrl(url, { appKey }),
+              fullscreen: true
+            });
+          }
+        },
+        async (t) => ({
+          appName: "Trello Reports",
+          appKey: await getAppKey(t)
+        })
+      );
     </script>
   </head>
   <body></body>
