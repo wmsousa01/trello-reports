@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <title>Trello Reports — Connector v2</title>
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <script>
+      (function () {
+        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
+        const BASE = "https://trello-reports.vercel.app"; // abre a RAIZ com query
+
+        async function buildUrl(t) {
+          // 👇 usar await garante que o boardId vem antes de abrir
+          const ctx = await t.getContext();
+          const boardId = ctx.board || "unknown";
+          // adiciona cache-buster pra evitar CDN antiga
+          const ts = Date.now();
+          return `${BASE}/?boardId=${boardId}&mode=public&access=devtoken&_=${ts}`;
+        }
+
+        window.TrelloPowerUp.initialize(
+          {
+            "board-buttons": (t) => [
+              {
+                icon: ICON,
+                text: "📊 Dashboard",
+                condition: "always",
+                callback: async () => {
+                  const url = await buildUrl(t);
+                  return t.modal({
+                    title: "📊 Dashboard",
+                    url: await t.signUrl(url),
+                    fullscreen: true
+                  });
+                }
+              }
+            ],
+            "board-views": (t) => [
+              {
+                url: async () => await t.signUrl(await buildUrl(t)),
+                name: "📊 Dashboard",
+                icon: ICON
+              }
+            ],
+            "show-settings": async (t) => {
+              const url = await buildUrl(t);
+              return t.modal({
+                title: "📊 Dashboard",
+                url: await t.signUrl(url),
+                fullscreen: true
+              });
+            }
+          },
+          {
+            appName: "Trello Reports",
+            // coloque sua appKey se usa REST API do Trello
+            // appKey: "SEU_API_KEY"
+          }
+        );
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -3,13 +3,13 @@
   "iframe": {
     "dashboard": {
       "title": "📊 Dashboard",
-      "url": "https://trello-reports.vercel.app/connector.html"
+      "url": "https://trello-reports.vercel.app/connector-v2.html"
     }
   },
   "capabilities": ["board-buttons", "board-views", "show-settings"],
   "name": "Trello Reports",
   "description": "Visualize métricas e relatórios da sua board em tempo real",
   "author": "Willian de Souza",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "icon": { "url": "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" }
 }
