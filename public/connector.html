@@ -5,16 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Cache-Control" content="no-store" />
     <title>Trello Reports — Connector</title>
+
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <script>
       (function () {
-        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png", alt: "Dashboard" };
-        const APP  = "https://trello-reports.vercel.app/index.html";
+        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
+        const BASE_URL = "https://trello-reports.vercel.app/index.html";
 
         function buildUrl(t) {
-          const ctx = t.getContext ? t.getContext() : {};
-          const boardId = ctx && ctx.board ? ctx.board : "CUUp9Mv3";
-          return `${APP}?boardId=${boardId}&mode=public&access=devtoken`;
+          const context = t.getContext();
+          const boardId = context?.board ?? "unknown";
+          return `${BASE_URL}?boardId=${boardId}&mode=public&access=devtoken`;
         }
 
         window.TrelloPowerUp.initialize(
@@ -22,29 +23,35 @@
             "board-buttons": (t) => [
               {
                 icon: ICON,
-                text: "📊 Abrir Dashboard",
+                text: "📊 Dashboard",
                 condition: "always",
                 callback: async () => {
                   const url = buildUrl(t);
                   return t.modal({
                     title: "📊 Dashboard",
                     url: await t.signUrl(url),
-                    fullscreen: true
+                    fullscreen: true,
                   });
-                }
-              }
+                },
+              },
             ],
+
             "board-views": (t) => [
               {
                 url: async () => await t.signUrl(buildUrl(t)),
                 name: "📊 Dashboard",
-                icon: ICON
-              }
+                icon: ICON,
+              },
             ],
+
             "show-settings": async (t) => {
               const url = buildUrl(t);
-              return t.modal({ title: "📊 Dashboard", url: await t.signUrl(url), fullscreen: true });
-            }
+              return t.modal({
+                title: "📊 Dashboard",
+                url: await t.signUrl(url),
+                fullscreen: true,
+              });
+            },
           },
           {
             appName: "Trello Reports",

@@ -10,4 +10,4 @@ const access = params.get("access");
 
 // Passa via props, sem usar TrelloPowerUp.iframe()
 const root = createRoot(document.getElementById("root"));
-root.render(<Dashboard boardId={boardId} mode={mode} access={access} />);
+root.render(<Dashboard boardId={boardId} mode={mode} access={access} />); 
