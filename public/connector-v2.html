@@ -5,19 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="Cache-Control" content="no-store" />
     <title>Trello Reports — Connector v2</title>
+
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <script>
       (function () {
         const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
-        const BASE = "https://trello-reports.vercel.app"; // abre a RAIZ com query
+        const BASE = "https://trello-reports.vercel.app"; // RAIZ do app
 
         async function buildUrl(t) {
-          // 👇 usar await garante que o boardId vem antes de abrir
           const ctx = await t.getContext();
           const boardId = ctx.board || "unknown";
-          // adiciona cache-buster pra evitar CDN antiga
-          const ts = Date.now();
-          return `${BASE}/?boardId=${boardId}&mode=public&access=devtoken&_=${ts}`;
+          const ts = Date.now(); // força cache-buster
+          const url = `${BASE}/?boardId=${boardId}&mode=public&access=devtoken&_=${ts}`;
+          console.log("🔗 URL gerada:", url);
+          return url;
         }
 
         window.TrelloPowerUp.initialize(
@@ -27,16 +28,17 @@
                 icon: ICON,
                 text: "📊 Dashboard",
                 condition: "always",
-                callback: async () => {
+                callback: async function (t) { // <- ASYNC É OBRIGATÓRIO
                   const url = await buildUrl(t);
                   return t.modal({
                     title: "📊 Dashboard",
-                    url: await t.signUrl(url),
+                    url: await t.signUrl(url), // <- usa a URL final
                     fullscreen: true
                   });
                 }
               }
             ],
+
             "board-views": (t) => [
               {
                 url: async () => await t.signUrl(await buildUrl(t)),
@@ -44,6 +46,7 @@
                 icon: ICON
               }
             ],
+
             "show-settings": async (t) => {
               const url = await buildUrl(t);
               return t.modal({
@@ -53,11 +56,7 @@
               });
             }
           },
-          {
-            appName: "Trello Reports",
-            // coloque sua appKey se usa REST API do Trello
-            // appKey: "SEU_API_KEY"
-          }
+          { appName: "Trello Reports" }
         );
       })();
     </script>
