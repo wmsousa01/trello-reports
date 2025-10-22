@@ -9,7 +9,12 @@
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <script>
       (function () {
-        const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
+        // Ícones inline para evitar falhas de carregamento
+        const ICON = {
+          dark: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white"><rect x="3" y="11" width="4" height="10"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/></svg>',
+          light: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="black"><rect x="3" y="11" width="4" height="10"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="4" width="4" height="17"/></svg>'
+        };
+
         const BASE = "https://trello-reports.vercel.app"; // RAIZ do app
 
         async function buildUrl(t) {
@@ -28,11 +33,11 @@
                 icon: ICON,
                 text: "📊 Dashboard",
                 condition: "always",
-                callback: async function (t) { // <- ASYNC É OBRIGATÓRIO
+                callback: async function (t) {
                   const url = await buildUrl(t);
                   return t.modal({
                     title: "📊 Dashboard",
-                    url: await t.signUrl(url), // <- usa a URL final
+                    url: await t.signUrl(url),
                     fullscreen: true
                   });
                 }
