@@ -10,11 +10,11 @@
     <script>
       (function () {
         const ICON = { url: "https://cdn-icons-png.flaticon.com/512/1828/1828778.png" };
-        const BASE_URL = "https://trello-reports.vercel.app/index.html";
+        const BASE_URL = "https://trello-reports.vercel.app";
 
-        function buildUrl(t) {
-          const context = t.getContext();
-          const boardId = context?.board ?? "unknown";
+        async function buildUrl(t) {
+          const context = await t.getContext();
+          const boardId = context.board || "unknown";
           return `${BASE_URL}/?boardId=${boardId}&mode=public&access=devtoken`;
         }
 
@@ -26,7 +26,7 @@
                 text: "📊 Dashboard",
                 condition: "always",
                 callback: async () => {
-                  const url = buildUrl(t);
+                  const url = await buildUrl(t);
                   return t.modal({
                     title: "📊 Dashboard",
                     url: await t.signUrl(url),
@@ -38,14 +38,14 @@
 
             "board-views": (t) => [
               {
-                url: async () => await t.signUrl(buildUrl(t)),
+                url: async () => await t.signUrl(await buildUrl(t)),
                 name: "📊 Dashboard",
                 icon: ICON,
               },
             ],
 
             "show-settings": async (t) => {
-              const url = buildUrl(t);
+              const url = await buildUrl(t);
               return t.modal({
                 title: "📊 Dashboard",
                 url: await t.signUrl(url),
@@ -55,7 +55,7 @@
           },
           {
             appName: "Trello Reports",
-            appKey: "7e9b8d1cfbe5742d0417872d32657a84"
+            appKey: "7e9b8d1cfbe5742d0417872d32657a84",
           }
         );
       })();
@@ -63,3 +63,4 @@
   </head>
   <body></body>
 </html>
+    
